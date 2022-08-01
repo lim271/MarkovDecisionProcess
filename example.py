@@ -68,7 +68,7 @@ def sampler(state, action):
       states.append(np.array([r, alpha]))
       probs.append(pr * palpha)
 
-  reward = (r - 10.0) ** 2
+  reward = -(r - 10.0) ** 2
 
   return states, probs, reward
 
