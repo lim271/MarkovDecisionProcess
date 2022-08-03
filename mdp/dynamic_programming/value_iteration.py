@@ -2,7 +2,7 @@ from multiprocessing import Array, Value, Process, cpu_count
 from time import time
 import numpy as np
 from scipy import sparse as sp
-from utils import Verbose
+from ..utils import Verbose
 
 
 
@@ -14,7 +14,7 @@ class ValueIteration:
     self.values = np.max(
       self.mdp.rewards.toarray(),
       axis=1
-    )
+    ) if mdp.values is None else mdp.values
 
 
   def solve(self, max_iteration=1e3, tolerance=1e-8, verbose=True, callback=None, parallel=True):
@@ -94,7 +94,6 @@ class ValueIteration:
       p.join()
     self.verbose('Time elapsed: %f (sec).\n'%(current_time - start_time))
     del self.verbose
-    return self.values, self.mdp.policy
     
 
   def update(self, parallel=True):

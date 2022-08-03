@@ -2,8 +2,8 @@ from time import time
 import numpy as np
 from scipy import sparse as sp
 from multiprocessing import Pool, Manager, cpu_count
-from utils import allclose_array, Verbose, savez
-from dynamic_programming import ValueIteration
+from .utils import allclose_array, Verbose, savez
+from .dynamic_programming import ValueIteration
 
 __all__ = [
   'States',
@@ -520,6 +520,7 @@ class MarkovDecisionProcess:
       self.states, self.actions
     ) if state_transition_probability is None else state_transition_probability
     self.policy = Policy(self.states, self.actions) if policy is None else policy
+    self.values = None
     self.__sampler = None
     self.__sample_reward = False
 
@@ -600,6 +601,13 @@ class MarkovDecisionProcess:
     self.__sampler = None
     end_time = time()
     verbose('Sampling is done. %f (sec) elapsed.\n'%(end_time - start_time))
+
+
+  def solve(self, max_iteration=1e3, tolerance=1e-8, verbose=True, callback=None, parallel=True):
+
+    solver = ValueIteration(self)
+    solver.solve(max_iteration=max_iteration, tolerance=tolerance, verbose=verbose, callback=callback, parallel=parallel)
+    self.values = solver.values
 
 
   def load(self, filename):

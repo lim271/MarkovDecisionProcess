@@ -7,14 +7,17 @@ from mdp import (
   StateTransitionProbability,
   MarkovDecisionProcess
 )
-from dynamic_programming import ValueIteration
+#from dynamic_programming import ValueIteration
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 
+N_R = 20
+N_ALPHA = 36
 
 
-r_list = np.linspace(1.0, 20.0, 20, dtype=np.float32)
-alpha_list = np.linspace(-np.pi + np.pi/36 , np.pi - np.pi/36, 36, dtype=np.float32)
+
+r_list = np.linspace(20.0/N_R, 20.0, N_R, dtype=np.float32)
+alpha_list = np.linspace(-np.pi + np.pi/N_ALPHA, np.pi - np.pi/N_ALPHA, N_ALPHA, dtype=np.float32)
 
 
 
@@ -85,13 +88,12 @@ if __name__=="__main__":
   mdp = MarkovDecisionProcess(states=states, actions=actions, discount=0.99)
   mdp.sample(sampler, sample_reward=True, verbose=True)
 
-  solver = ValueIteration(mdp)
-  values, policy = solver.solve()
+  mdp.solve()
 
   plt.figure(1)
-  plt.imshow(values.reshape((20, 36)))
+  plt.imshow(mdp.values.reshape((len(r_list), len(alpha_list))))
 
   plt.figure(2)
-  plt.imshow(policy.toarray().reshape((20, 36)))
+  plt.imshow(mdp.policy.toarray().reshape((len(r_list), len(alpha_list))))
 
   plt.show()
