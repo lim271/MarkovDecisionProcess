@@ -2,7 +2,7 @@ from multiprocessing import Array, Value, Process, cpu_count
 from time import time
 import numpy as np
 from scipy import sparse as sp
-from ..utils import Verbose
+from ..__utils import Verbose
 
 
 

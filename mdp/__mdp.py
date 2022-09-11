@@ -2,8 +2,8 @@ from time import time
 import numpy as np
 from scipy import sparse as sp
 from multiprocessing import Pool, Manager, cpu_count
-from .utils import allclose_array, Verbose, savez
-from .dynamic_programming import ValueIteration
+from .__utils import allclose_array, Verbose, savez
+from .__dynamic_programming import ValueIteration
 
 __all__ = [
   'States',

@@ -2,7 +2,7 @@ from time import time
 import numpy as np
 from scipy import sparse as sp
 from scipy.sparse.linalg import spsolve, bicgstab, lgmres
-from ..utils import Verbose
+from ..__utils import Verbose
 
 
 
