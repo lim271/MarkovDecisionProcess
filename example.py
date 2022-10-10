@@ -7,7 +7,6 @@ from mdp import (
   StateTransitionProbability,
   MarkovDecisionProcess
 )
-#from dynamic_programming import ValueIteration
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 

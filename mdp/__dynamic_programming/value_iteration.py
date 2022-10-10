@@ -123,11 +123,19 @@ class ValueIteration:
     self.verbose(
       'Updating policy...'
     )
-    policy = np.argmax(q, axis=1).astype(self.mdp.policy.dtype)
-    new_values = np.take_along_axis(q, policy[:, np.newaxis], axis=1).ravel()
-    self.mdp.policy.update(
-      policy
-    )
+    if isinstance(self.mdp.policy.dtype, int):
+      policy = np.argmax(q, axis=1).astype(self.mdp.policy.dtype)
+      new_values = np.take_along_axis(q, policy[:, np.newaxis], axis=1).ravel()
+      self.mdp.policy.update(
+        policy
+      )
+    else:
+      new_values = np.max(q, axis=1).ravel()
+      new_values += np.log(np.sum(np.exp(q - new_values[:, np.newaxis]), axis=1))
+      policy = np.exp(q - new_values[:, np.newaxis], axis=1)
+      self.mdp.policy.update(
+        policy
+      )
 
     value_diff = self.values[:] - new_values[:]
     value_diff = np.sqrt(np.dot(value_diff, value_diff) / self.mdp.states.n)

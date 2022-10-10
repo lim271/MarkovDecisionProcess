@@ -430,7 +430,10 @@ class Policy:
 
 
   def __setitem__(self, key, val):
-    self.__data[key] = min(val, self.__actions.n - 1)
+    if isinstance(self.dtype, int):
+      self.__data[key] = min(val, self.__actions.n - 1)
+    else:
+      self.__data[key] = np.clip(val, 0, 1)
 
 
   def __getitem__(self, key):
@@ -457,7 +460,10 @@ class Policy:
 
   @property
   def one_hot_array(self):
-    return self.__I[self.__data]
+    if isinstance(self.dtype, int):
+      return self.__I[self.__data]
+    else:
+      return self.__I[self.__data.argmax(axis=1)]
 
 
   def get_action(self, state):
@@ -465,8 +471,11 @@ class Policy:
 
 
   def get_action_index(self, state):
-    idx = self.__states.index(state)
-    return int(self.__data[idx])
+    if isinstance(self.dtype, int):
+      idx = self.__states.index(state)
+    else:
+      idx = self.__states.index(state)
+    return int(self.__data[idx, :].argmax())
 
 
   def update(self, data):
@@ -474,24 +483,41 @@ class Policy:
 
 
   def reset(self, dtype=int):
-    self.__data  = np.random.randint(
-      0, self.__actions.n, self.__states.n, dtype=dtype
-    )
+    if isinstance(dtype, int):
+      self.__data = np.random.randint(
+        0, self.__actions.n, self.__states.n, dtype=dtype
+      )
+    else:
+      self.__data = sp.csr_matrix(
+        (
+          np.ones((self.__states.n,)),
+          (
+            np.arange(0, self.__states.n, dtype=int),
+            np.random.randint(
+              0, self.__actions.n, self.__states.n, dtype=dtype
+            )
+          )
+        ),
+        shape=(self.__states.n, self.__actions.n)
+      )
 
 
   def toarray(self, copy=False):
-    if copy:
-      return self.__data.copy()
+    if isinstance(self.dtype, int):
+      if copy:
+        return self.__data.copy()
+      else:
+        return self.__data
     else:
-      return self.__data
+      return self.__data.toarray()
 
 
   def load(self, filename):
-    self.__data = np.load(filename)
+    self.__data = np.load(filename, allow_pickle=True)
 
 
   def save(self, filename):
-    np.save(filename, self.__data)
+    np.save(filename, self.__data, allow_pickle=True)
 
   # End of class Policy
 
