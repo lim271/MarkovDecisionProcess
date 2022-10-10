@@ -479,7 +479,10 @@ class Policy:
 
 
   def update(self, data):
-    self.__data = data
+    if isinstance(data.dtype, int):
+      self.__data = data
+    else:
+      self.__data = sp.csr_matrix(data)
 
 
   def reset(self, dtype=int):
